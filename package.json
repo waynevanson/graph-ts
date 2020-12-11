@@ -1,0 +1,22 @@
+{
+  "name": "graph-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:waynevanson/graph-ts.git",
+  "author": "Wayne Van Son <waynevanson@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^26.0.18",
+    "jest": "^26.6.3",
+    "monocle-ts": "^2.3.3",
+    "ts-jest": "^26.4.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.2"
+  },
+  "dependencies": {
+    "fp-ts": "^2.9.1"
+  },
+  "peerDependencies": {
+    "monocle-ts": "^2.3.3"
+  }
+}
