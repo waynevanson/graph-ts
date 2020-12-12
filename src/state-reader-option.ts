@@ -22,7 +22,7 @@ export interface StateReaderOption<S, R, A> {
 const {
   evalState: evaluate,
   execState: execute,
-  fromM: fromReader,
+  fromM: fromReaderOption,
   fromState,
   get,
   gets,
@@ -63,14 +63,43 @@ export const Profunctor: Profunctor3<URI> = {
     ),
 }
 
-export const stateReader: Profunctor3<URI> & Monad3<URI> & Category3<URI> = {
+export const stateReaderOption: Profunctor3<URI> &
+  Monad3<URI> &
+  Category3<URI> = {
   URI,
   ...Monad,
   ...Profunctor,
   ...Category,
 }
 
-export const { id } = Category
+export const bindTo = <K extends string>(name: K) => <R, E, A>(
+  fa: StateReaderOption<R, E, A>
+) =>
+  pipe(
+    fa,
+    map((a) => ({ [name]: a } as { [P in K]: A }))
+  )
+
+export const bind = <K extends string, R, E, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => StateReaderOption<R, E, B>
+) => (fa: StateReaderOption<R, E, A>) =>
+  pipe(
+    fa,
+    chain((a) =>
+      pipe(
+        f(a),
+        map(
+          (b) =>
+            (Object.assign({}, a, { [name]: b }) as unknown) as {
+              [P in K | keyof A]: P extends keyof A ? A[P] : B
+            }
+        )
+      )
+    )
+  )
+
+export const { id, of } = stateReaderOption
 
 const {
   ap,
@@ -82,7 +111,7 @@ const {
   map,
   promap,
   compose,
-} = pipeable.pipeable(stateReader)
+} = pipeable.pipeable(stateReaderOption)
 
 export {
   ap,
@@ -96,7 +125,7 @@ export {
   // from M
   evaluate,
   execute,
-  fromReader,
+  fromReaderOption,
   fromState,
   get,
   gets,
